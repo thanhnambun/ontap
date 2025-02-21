@@ -117,18 +117,19 @@ order by total_product desc;
 
 -- câu 7
 	
-select c.customer_id , c.customer_name
-from customers c 
-join orders o on o.customer_id = c.customer_id; 
+select customer_id, customer_name
+from customers
+where customer_id not in (select distinct customer_id from orders);
 
 SELECT product_name 
 FROM products 
 WHERE price > (SELECT AVG(price) FROM products);
 
-select c.customer_id , c.customer_name ,o.total_mount
-from customers c 
-join orders o on o.customer_id = c.customer_id
-where o.total_mount = (select max(total_mount) from orders); 
+select customers.customer_id, customers.customer_name, sum(orders.total_amount) as total_spent
+from orders
+join customers on orders.customer_id = customers.customer_id
+group by customers.customer_id, customers.customer_name
+having total_spent = (select max(total_spent) from (select sum(total_amount) as total_spent from orders group by customer_id) as temp);
 
 -- câu 8 
 create view view_order_list
